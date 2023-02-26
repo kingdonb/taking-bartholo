@@ -1,6 +1,6 @@
 FROM debian:stable-slim AS builder
 
-ENV platform=aarch64
+ENV platform=amd64
 
 WORKDIR /opt
 RUN apt-get update && apt-get install -y wget && \
@@ -20,4 +20,4 @@ RUN echo "#!/bin/sh\nspin registry pull ghcr.io/kingdonb/taking-bartholo:v1" \
 RUN echo "#!/bin/sh\nspin up --from-registry ghcr.io/kingdonb/taking-bartholo:v1 --listen 0.0.0.0:3000" \
   > spin-up.sh && chmod +x spin-up.sh
 
-CMD ./spin-up.sh
+CMD ["./spin-up.sh"]
