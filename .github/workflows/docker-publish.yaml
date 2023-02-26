@@ -9,6 +9,9 @@ on:
 
 jobs:
   docker:
+    permissions:
+      packages: write
+      contents: read
     env:
       IMAGE: ghcr.io/kingdonb/taking-bartholo
     runs-on: ubuntu-latest
