@@ -1,0 +1,64 @@
+name: Setup Spin CLI
+description: A GitHub Action for running Spin commands
+author: Kingdon Barrett
+branding:
+  color: blue
+  icon: command
+inputs:
+  version:
+    description: "Spin version e.g. 0.8.0 (defaults to latest stable release)"
+    required: false
+  arch:
+    description: "arch can be amd64, or aarch64"
+    required: true
+    default: "amd64"
+  bindir:
+    description: "Optional location of the Spin binary. Will not use sudo if set. Updates System Path."
+    required: false
+  token:
+    description: "GitHub Token used to authentication against the API (generally only needed to prevent quota limit errors)"
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: "Download spin binary to tmp"
+      shell: bash
+      run: |
+        ARCH=${{ inputs.arch }}
+        VERSION=${{ inputs.version }}
+        TOKEN=${{ inputs.token }}
+
+        if [ -z "${VERSION}" ]; then
+          if [ -n "${TOKEN}" ]; then
+            VERSION_SLUG=$(curl https://api.github.com/repos/fermyon/spin/releases/latest --silent --location --header "Authorization: token ${TOKEN}" | grep tag_name)
+          else
+            # With no GITHUB_TOKEN you will experience occasional failures due to rate limiting
+            # Ref: https://github.com/fluxcd/flux2/issues/3509#issuecomment-1400820992
+            VERSION_SLUG=$(curl https://api.github.com/repos/fermyon/spin/releases/latest --silent --location | grep tag_name)
+          fi
+
+          VERSION=$(echo "${VERSION_SLUG}" | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
+        fi
+
+        BIN_URL="https://github.com/fermyon/spin/releases/download/v${VERSION}/spin_${VERSION}_linux_${ARCH}.tar.gz"
+        curl --silent --fail --location "${BIN_URL}" --output /tmp/spin.tar.gz
+        mkdir -p /tmp/spin
+        tar -C /tmp/spin/ -zxvf /tmp/spin.tar.gz
+    - name: "Copy Spin binary to execute location"
+      shell: bash
+      run: |
+        BINDIR=${{ inputs.bindir }}
+        if [ -z "${BINDIR}" ]; then
+          sudo cp /tmp/spin/spin /usr/local/bin
+        else
+          cp /tmp/spin/spin "${BINDIR}"
+          echo "${BINDIR}" >> $GITHUB_PATH
+        fi
+    - name: "Cleanup tmp"
+      shell: bash
+      run: |
+        rm -rf /tmp/spin/ /tmp/spin.tar.gz
+    - name: "Verify correct installation of binary"
+      shell: bash
+      run: |
+        spin --version
