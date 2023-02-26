@@ -28,6 +28,8 @@ runs:
         VERSION=${{ inputs.version }}
         TOKEN=${{ inputs.token }}
 
+        set -e -x
+
         if [ -z "${VERSION}" ]; then
           if [ -n "${TOKEN}" ]; then
             VERSION_SLUG=$(curl https://api.github.com/repos/fermyon/spin/releases/latest --silent --location --header "Authorization: token ${TOKEN}" | grep tag_name)
