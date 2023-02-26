@@ -21,4 +21,4 @@ jobs:
       - name: Publish v1
         id: publish
         run: |
-          spin registry push ghcr.io/${{ vars.GITHUB_ACTOR }}/taking-bartholo:v1
+          spin registry push ghcr.io/${{ github.actor }}/taking-bartholo:v1
