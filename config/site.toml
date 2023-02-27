@@ -1,12 +1,12 @@
-title = "Your Site Name"
+title = "Limnocentral (Testing)"
 # logo = "URL to logo"
-base_url = "http://localhost:3000"
+base_url = "https://bart.howard.moomboo.space"
 about = "This site is generated with Bartholomew, the WebAssembly micro-CMS. And this message is in site.toml."
 index_site_pages = ["blog"]
 
 [extra]
-copyright = "The Site Authors"
-github = "https://github.com/fermyon"
-twitter = "https://twitter.com/fermyontech"
+copyright = "The Site Authors (fill this out)"
+github = "https://github.com/kingdonb/taking-bartholo"
+twitter = "https://hachyderm.io/@yebyen"
 
 date_style = "%B %e, %Y"

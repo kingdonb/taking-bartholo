@@ -1,5 +1,6 @@
 image:
-  repository: ghcr.io/kingdonb/taking-bartholo
+  registry: ghcr.io
+  repository: kingdonb/taking-bartholo
   tag: main-eb4d2f96-1677468420
 
 ports:
