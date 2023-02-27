@@ -16,8 +16,8 @@ WORKDIR /opt
 RUN apt-get update && apt-get install -y ca-certificates && \
   rm -rf /var/lib/apt/lists/*
 
-ADD scripts/spin-pull.sh \
-  scripts/spin-up.sh \
+ADD ci-scripts/spin-pull.sh \
+  ci-scripts/spin-up.sh \
     /usr/local/bin/
 
 RUN bash -c "chmod +x /usr/local/bin/spin-{up,pull}.sh"
