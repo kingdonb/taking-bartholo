@@ -1,0 +1,113 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - 'release/*'
+
+jobs:
+  build-id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        id: prep
+        run: |
+          BRANCH=${GITHUB_REF##*/}
+          TS=$(date +%s)
+          REVISION=${GITHUB_SHA::8}
+          BUILD_ID="${BRANCH}-${REVISION}-${TS}"
+          LATEST_ID=canary
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            BUILD_ID=${GITHUB_REF/refs\/tags\//}
+            LATEST_ID=latest
+          fi
+          echo ::set-output name=BUILD_DATE::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-output name=BUILD_ID::${BUILD_ID}
+          echo ::set-output name=LATEST_ID::${LATEST_ID}          
+    outputs:
+      BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
+
+  docker-push:
+    needs: build-id
+    permissions:
+      packages: write
+      contents: read
+    env:
+      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set BUILD_ID
+        id: build-id
+        run: |
+          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+  spin-registry-push:
+    needs: build-id
+    permissions:
+      packages: write
+      contents: read
+    env:
+      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo/oci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set BUILD_ID
+        id: build-id
+        run: |
+          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
+
+      - name: Setup Spin CLI
+        uses: kingdonb/taking-bartholo/action@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out code
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Publish v1
+        id: publish
+        run: |
+          spin registry push ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
