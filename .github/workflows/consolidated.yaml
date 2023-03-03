@@ -24,9 +24,9 @@ jobs:
             BUILD_ID=${GITHUB_REF/refs\/tags\//}
             LATEST_ID=latest
           fi
-          echo ::set-output name=BUILD_DATE::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=BUILD_ID::${BUILD_ID}
-          echo ::set-output name=LATEST_ID::${LATEST_ID}          
+          echo BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') >> $GITHUB_OUTPUT
+          echo BUILD_ID=${BUILD_ID} >> $GITHUB_OUTPUT
+          echo LATEST_ID=${LATEST_ID} >> $GITHUB_OUTPUT
     outputs:
       BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
 
@@ -42,7 +42,7 @@ jobs:
       - name: Set BUILD_ID
         id: build-id
         run: |
-          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
+          echo BUILD_ID=${{ needs.build-id.outputs.BUILD_ID }} >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -91,7 +91,7 @@ jobs:
       - name: Set BUILD_ID
         id: build-id
         run: |
-          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
+          echo BUILD_ID=${{ needs.build-id.outputs.BUILD_ID }} >> $GITHUB_OUTPUT
 
       - name: Setup Spin CLI
         uses: kingdonb/taking-bartholo/action@main
