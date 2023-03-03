@@ -26,4 +26,4 @@ ADD ci-scripts/spin-pull.sh \
 
 RUN bash -c "chmod +x /usr/local/bin/spin-{up,pull}.sh"
 
-CMD bash -c "source /env.vars && spin-up.sh"
+CMD bash -c "source /env.vars && export BUILD_ID && spin-up.sh"
