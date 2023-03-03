@@ -71,6 +71,8 @@ jobs:
             BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
           tags: |
             ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
