@@ -6,6 +6,7 @@ on:
       - '*'
     tags-ignore:
       - 'release/*'
+      - 'chart-*'
 
 jobs:
   build-id:
