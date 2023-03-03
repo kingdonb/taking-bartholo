@@ -63,8 +63,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          build-args:
-            - BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
+          build-args: |
+            BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
           tags: |
             ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
 
