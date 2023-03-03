@@ -8,7 +8,7 @@ COPY ci-scripts/platform.sh .
 RUN ./platform.sh
 
 WORKDIR /opt
-RUN set -x && apt-get update && apt-get install -y wget && \
+RUN apt-get update && apt-get install -y wget && \
   wget -q https://github.com/fermyon/spin/releases/download/v${spin_ver}/spin-v${spin_ver}-linux-$(cat /.platform).tar.gz && \
   tar xvf spin-v${spin_ver}-linux-$(cat /.platform).tar.gz && \
   mv spin /usr/local/bin/ && \
