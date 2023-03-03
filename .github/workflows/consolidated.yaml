@@ -39,7 +39,7 @@ jobs:
       - name: Set BUILD_ID
         id: build-id
         run: |
-          echo ::set-output name=BUILD_ID::${{ jobs.build-id.steps.prep.outputs.BUILD_ID }}
+          echo ::set-output name=BUILD_ID::${{ steps.prep.outputs.BUILD_ID }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
