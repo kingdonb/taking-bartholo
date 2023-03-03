@@ -21,16 +21,15 @@ COPY --from=builder /usr/local/bin/spin /usr/local/bin/spin
 WORKDIR /opt
 RUN apt-get update && apt-get install -y ca-certificates && \
   rm -rf /var/lib/apt/lists/*
-ARG BUILD_ID
-
-RUN echo "BUILD_ID=$BUILD_ID" >> /env.vars
-
-ARG GITHUB_ACTOR
-RUN echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> /env.vars
 ADD ci-scripts/spin-pull.sh \
   ci-scripts/spin-up.sh \
     /usr/local/bin/
 
 RUN bash -c "chmod +x /usr/local/bin/spin-{up,pull}.sh"
+
+ARG BUILD_ID
+ARG GITHUB_ACTOR
+RUN echo "BUILD_ID=$BUILD_ID" > /env.vars \
+ && echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> /env.vars
 
 CMD bash -c "set -a && source /env.vars && spin-up.sh"
