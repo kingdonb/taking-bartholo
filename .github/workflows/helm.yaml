@@ -4,9 +4,6 @@ on:
   push:
     tags:
       - 'chart-*'
-    tags-ignore:
-      - 'release/*'
-      - 'v*'
 
 jobs:
   helm-push-registry:
