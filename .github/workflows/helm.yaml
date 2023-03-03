@@ -9,7 +9,7 @@ on:
       - 'v*'
 
 jobs:
-  helm-push:
+  helm-push-registry:
     runs-on: ubuntu-latest
     permissions:
       packages: write
