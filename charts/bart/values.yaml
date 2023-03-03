@@ -1,7 +1,7 @@
 image:
   registry: ghcr.io
   repository: kingdonb/taking-bartholo
-  tag: new-content-b595d4a0-1677884802
+  tag: 0.0.2
 
 ports:
   - name: http
