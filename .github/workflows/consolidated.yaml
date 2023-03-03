@@ -26,6 +26,8 @@ jobs:
           echo ::set-output name=BUILD_DATE::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=BUILD_ID::${BUILD_ID}
           echo ::set-output name=LATEST_ID::${LATEST_ID}          
+    outputs:
+      BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
 
   docker-push:
     needs: build-id
@@ -39,7 +41,7 @@ jobs:
       - name: Set BUILD_ID
         id: build-id
         run: |
-          echo ::set-output name=BUILD_ID::${{ steps.prep.outputs.BUILD_ID }}
+          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -83,7 +85,7 @@ jobs:
       - name: Set BUILD_ID
         id: build-id
         run: |
-          echo ::set-output name=BUILD_ID::${{ steps.prep.outputs.BUILD_ID }}
+          echo ::set-output name=BUILD_ID::${{ needs.build-id.outputs.BUILD_ID }}
 
       - name: Setup Spin CLI
         uses: kingdonb/taking-bartholo/action@main
