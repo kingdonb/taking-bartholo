@@ -1,7 +1,8 @@
+ARG BUILD_ID=canary
 FROM debian:stable-slim AS builder
 
 ENV platform=amd64
-ENV spin_ver=0.9.0
+ENV spin_ver=0.10.0
 
 WORKDIR /opt
 RUN apt-get update && apt-get install -y wget && \
@@ -16,11 +17,13 @@ COPY --from=builder /usr/local/bin/spin /usr/local/bin/spin
 WORKDIR /opt
 RUN apt-get update && apt-get install -y ca-certificates && \
   rm -rf /var/lib/apt/lists/*
+ARG BUILD_ID
 
+RUN echo "BUILD_ID=$BUILD_ID" > /env.vars
 ADD ci-scripts/spin-pull.sh \
   ci-scripts/spin-up.sh \
     /usr/local/bin/
 
 RUN bash -c "chmod +x /usr/local/bin/spin-{up,pull}.sh"
 
-CMD spin-up.sh
+CMD bash -c "source /env.vars && spin-up.sh"
