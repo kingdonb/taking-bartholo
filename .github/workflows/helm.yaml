@@ -1,0 +1,43 @@
+name: helm-chart
+
+on:
+  push:
+    tags:
+      - 'chart-*'
+    tags-ignore:
+      - 'release/*'
+      - 'v*'
+
+jobs:
+  helm-push:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Prepare
+        id: prep
+        run: |
+          BRANCH=${GITHUB_REF##*/}
+          TS=$(date +%s)
+          REVISION=${GITHUB_SHA::8}
+          BUILD_ID="${BRANCH}-${REVISION}-${TS}"
+          LATEST_ID=canary
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            BUILD_ID=${GITHUB_REF/refs\/tags\/chart-/}
+            LATEST_ID=latest
+          fi
+          echo ::set-output name=BUILD_DATE::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-output name=BUILD_ID::${BUILD_ID}
+          echo ::set-output name=LATEST_ID::${LATEST_ID}          
+
+      - name: Chart | Push
+        uses: appany/helm-oci-chart-releaser@v0.4.0
+        with:
+          name: taking-bartholo/helm
+          repository: kingdonb
+          tag: ${{ steps.prep.outputs.BUILD_ID }}
+          path: charts/bart
+          registry: ghcr.io
+          registry_username: ${{ github.actor }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
