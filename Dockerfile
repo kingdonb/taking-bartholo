@@ -1,4 +1,5 @@
 ARG BUILD_ID=canary
+ARG GITHUB_ACTOR
 FROM debian:stable-slim AS builder
 
 ENV spin_ver=0.10.0
@@ -23,10 +24,13 @@ RUN apt-get update && apt-get install -y ca-certificates && \
 ARG BUILD_ID
 
 RUN echo "BUILD_ID=$BUILD_ID" >> /env.vars
+
+ARG GITHUB_ACTOR
+RUN echo "GITHUB_ACTOR=$GITHUB_ACTOR" >> /env.vars
 ADD ci-scripts/spin-pull.sh \
   ci-scripts/spin-up.sh \
     /usr/local/bin/
 
 RUN bash -c "chmod +x /usr/local/bin/spin-{up,pull}.sh"
 
-CMD bash -c "source /env.vars && export BUILD_ID && spin-up.sh"
+CMD bash -c "set -a && source /env.vars && spin-up.sh"
