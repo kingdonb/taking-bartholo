@@ -34,7 +34,7 @@ jobs:
       contents: read
     env:
       IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
-      BUILD_ID: ${{ jobs.build-id.steps.prep.outputs.BUILD_ID }}
+      BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
@@ -74,7 +74,7 @@ jobs:
       contents: read
     env:
       IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo/oci
-      BUILD_ID: ${{ jobs.build-id.steps.prep.outputs.BUILD_ID }}
+      BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
     runs-on: ubuntu-latest
     steps:
       - name: Setup Spin CLI
