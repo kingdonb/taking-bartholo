@@ -34,9 +34,13 @@ jobs:
       contents: read
     env:
       IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
-      BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
     runs-on: ubuntu-latest
     steps:
+      - name: Set BUILD_ID
+        id: build-id
+        run: |
+          echo ::set-output name=BUILD_ID::${{ jobs.build-id.steps.prep.outputs.BUILD_ID }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -60,9 +64,9 @@ jobs:
         with:
           push: true
           build-args:
-            - BUILD_ID=${{ env.BUILD_ID }}
+            - BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
           tags: |
-            ${{ env.IMAGE }}:${{ env.BUILD_ID }}
+            ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -77,6 +81,11 @@ jobs:
       BUILD_ID: ${{ steps.prep.outputs.BUILD_ID }}
     runs-on: ubuntu-latest
     steps:
+      - name: Set BUILD_ID
+        id: build-id
+        run: |
+          echo ::set-output name=BUILD_ID::${{ jobs.build-id.steps.prep.outputs.BUILD_ID }}
+
       - name: Setup Spin CLI
         uses: kingdonb/taking-bartholo/action@main
         with:
@@ -96,4 +105,4 @@ jobs:
       - name: Publish v1
         id: publish
         run: |
-          spin registry push ${{ env.IMAGE }}:${{ env.BUILD_ID }}
+          spin registry push ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
