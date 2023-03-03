@@ -69,6 +69,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
+            GITHUB_ACTOR=${{ github.actor }}
           tags: |
             ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
           cache-from: type=gha
