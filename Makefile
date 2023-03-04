@@ -23,7 +23,7 @@ release:
 	git push origin chart-$(CHART_VER)
 
 test:
-	docker run -p 3000:3000 --rm --name test -it $(IMAGE) sh
+	docker run -p 3000:3000 --rm --name test -it $(IMAGE)
 
 version-set:
 	@next="$(TAG)" && \
