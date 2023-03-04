@@ -1,8 +1,12 @@
 .PHONY: all build-test test version-set chart-ver-set
 
 GITHUB_ACTOR ?= kingdonb
-TAG ?= latest # app version
-SEMVER ?= 0.0.0-dev # chart version
+
+# app version
+TAG ?= latest
+# chart version
+SEMVER ?= 0.0.0-dev
+
 IMAGE ?= ghcr.io/$(GITHUB_ACTOR)/taking-bartholo:$(TAG)
 VERSION := $(shell grep -e '^version =' spin.toml | awk '{ print $$3 }' | tr -d '"')
 CHART_VER := $(shell grep -e '^version:' charts/bart/Chart.yaml | awk '{ print $$2 }' | tr -d '"')
