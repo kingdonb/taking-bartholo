@@ -15,4 +15,6 @@ More blog
 
 ## Headers Should Be Second-level, Not First
 
-Another post
+Example Image:
+
+![Caption Text](/static/image-example.png)
