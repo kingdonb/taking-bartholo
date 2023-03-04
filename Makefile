@@ -1,4 +1,4 @@
-.PHONY: all build-test test version-set chart-ver-set
+.PHONY: all build-test test version-set chart-ver-set release
 
 GITHUB_ACTOR ?= kingdonb
 
@@ -15,6 +15,12 @@ all: build-test test
 build-test:
 	docker buildx build --build-arg GITHUB_ACTOR=$(GITHUB_ACTOR) \
 		--load . -t $(IMAGE)
+
+release:
+	git tag $(VERSION)
+	git push origin $(VERSION)
+	git tag chart-$(CHART_VER)
+	git push origin chart-$(CHART_VER)
 
 test:
 	docker run -p 3000:3000 --rm --name test -it $(IMAGE) sh
