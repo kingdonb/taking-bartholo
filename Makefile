@@ -1,4 +1,5 @@
 .PHONY: all build-test test version-set chart-ver-set release
+.PHONY: test-latest gh-latest-build-id check GH-exists
 
 GITHUB_ACTOR ?= kingdonb
 
@@ -24,6 +25,20 @@ release:
 
 test:
 	docker run -p 3000:3000 --rm --name test -it $(IMAGE)
+
+# Try running `brew install gh` if this errors out
+check: GH-exists
+GH-exists: ; @which gh > /dev/null
+
+gh-latest-build-id: check
+	@set -e ;\
+	LAST_RUN=$$(gh run list -L 1 --json databaseId -q .[].databaseId) ;\
+	BUILD_ID_JOB=$$(gh run view $$LAST_RUN|grep build-id|awk '{ print $$6 }'|tr -d \)) ;\
+	gh run view --job $$BUILD_ID_JOB --log|grep -e 'BUILD_ID=[^$$"]'|grep -v echo |\
+		awk '{ print $$4 }' |awk -F= '{ printf "make test TAG=%s", $$2 }'
+
+test-latest:
+	`make gh-latest-build-id`
 
 version-set:
 	@next="$(TAG)" && \
