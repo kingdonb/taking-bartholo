@@ -109,9 +109,83 @@ Fermyon Cloud (or Hippo Factory, the Open Source version of Fermyon Cloud!)
 
 ## Releasing
 
-Everything is driven by manually tagging. You tag a Docker image, which knows
-its own `BUILD_ID` that corresponds with an OCI content image (`spin registry
-push`) and that's what Spin runs.
+Everything is driven by tagging.
+
+You tag a Docker image, which knows its own `BUILD_ID` that corresponds with an
+OCI content image (`spin registry push`) and that's what Spin runs. All of this
+happens in CI, on every branch and tag pushed.
+
+There is no need to install Docker for local development at all, but you need
+to enable GitHub Actions on your own fork to push new Docker images to GHCR.io.
+
+<a id="tldr"/>
+
+The `Makefile` has some provisions for testing locally, and now also releasing.
+
+You can type `make` to build an image locally, but it will not work without the
+corresponding OCI artifact that is made from the `consolidated.yaml` workflow.
+
+Follow the Release Guide below, (it should be OK to `tl;dr` at this point!)
+
+### Release Guide
+
+Check the current version in `spin.toml`, and the Chart version in `Chart.yaml`
+
+Decide what you want as the next
+
+* `TAG` (`appVersion`), and
+* `SEMVER` (Chart `version`)
+
+Then, plug in your values and run these commands in sequence:
+
+```
+make version-set TAG=0.1.1-dev
+make chart-ver-set SEMVER=0.2.1
+# (commit the resulting changes and PR/merge them or push to main)
+
+make release    # this pushes both tags!
+#^– be sure that Docker Build from main is finished before this point,
+# (or your automated deployment is likely to fail with ImagePullBackOff!)
+```
+
+Taking into account the meaning of `MAJOR` and `MINOR` for communicating
+changes that are "breaking" or "feature", the `values.yaml` is usually
+considered a Helm Chart's "API" otherwise known as the public interface.
+
+Helmet supports (hopefully) everything we need, so there isn't much to do
+when it comes to Helm templating. You'll find we got away with a one-line
+chart, thanks to the [Helmet][] chart library we've used as a dependency.
+
+[Helmet]: https://github.com/companyinfo/helm-charts/tree/main/charts/helmet
+
+### Guidelines for Versioning Helm Charts
+
+Any changes to a Chart's default values other than `tag` are usually at least
+considered as `MINOR` rather than `PATCH` level updates, (but this is at your
+discretion as the publisher.)
+
+Always increment both `appVersion` and the Chart `version` whenever you release
+a new image, as Helm chart versions are made immutably for Helm, to facilitate
+easy declarative rollback in any pipeline or Kubernetes deployment environment.
+
+Helm charts are basically templates, and `values.yaml` is versioned as part of
+the template. This by itself is not especially conducive to rapidly iterating.
+
+For a declarative solution that allows you to override values, that does not
+burden the deployer with managing always releasing a new chart or incrementing
+a version by hand each time, please try out [Flux's Helm Controller][] if you
+aren't using it already!
+
+[Flux's Helm Controller]: https://fluxcd.io/flux/components/helm/helmreleases/#values-overrides
+
+### Automated Iterative Development
+
+With Image Update Automation and a few webhook receivers, this can be made to
+work very smoothly (if you have any stamina left after publishing Helm chart.)
+
+TODO: write this guide.
+
+### Permissions
 
 The `.github/workflows` all request `packages: write` permission. They will
 push packages (Docker, OCI, and Helm) when you push a tag to eg. `0.1.2` or
@@ -120,12 +194,15 @@ push packages (Docker, OCI, and Helm) when you push a tag to eg. `0.1.2` or
 If you don't want to push a new chart, you can always override `image.tag` in
 the chart `values.yaml`.
 
-Remember to run `spin up` before you commit and push your changes, so you don't
-have to commit twice! (Measure twice, cut only once...)
+### Testing Locally
 
-Always increment both `version: 0.1.2` and `appVersion: "0.0.3"` whenever you
-release a new version of the chart, and remember to update the `tag: 0.0.3`
-in `values.yaml` matching `appVersion`. (Might want to script this process.)
+Remember to run `spin up` before you commit and push your changes, so you don't
+have to commit twice!
+
+Spin is made for local development, you don't need a new pod every time to test
+your changes – Spin is the server, and it runs anywhere.
+
+Measure twice, cut once... Helm releases and pod sandboxes don't grow on trees!
 
 ## Directory Structure:
 
