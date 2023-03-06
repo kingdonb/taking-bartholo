@@ -30,10 +30,10 @@ jobs:
 
       - name: Check out code
         id: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # pin@v3
 
       - name: Chart | Push
-        uses: appany/helm-oci-chart-releaser@v0.4.0
+        uses: appany/helm-oci-chart-releaser@a517e1b617d0377cbca9073bd8b0f35daf83059c # pin@v0.4.0
         with:
           name: bart
           repository: ${{ github.actor }}/taking-bartholo/helm
