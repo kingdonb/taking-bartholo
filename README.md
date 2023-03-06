@@ -140,8 +140,12 @@ Then, plug in your values and run these commands in sequence:
 
 ```
 make version-set TAG=0.1.1-dev
-make chart-vers-set SEMVER=0.2.1
-make release
+make chart-ver-set SEMVER=0.2.1
+# (commit the resulting changes and PR/merge them or push to main)
+
+make release    # this pushes both tags!
+#^– be sure that Docker Build from main is finished before this point,
+# (or your automated deployment is likely to fail with ImagePullBackOff!)
 ```
 
 Taking into account the meaning of `MAJOR` and `MINOR` for communicating
