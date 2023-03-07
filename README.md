@@ -29,9 +29,15 @@ patches, or even be aware of whether multiple architectures are in use at all.
 Spin itself is a Rust application that compiles for specific host platforms.
 
 Some workflow has been copied and adapted from the FluxCD project, [Flux GitHub Action][]
-that selects a latest release of Spin with the GitHub API, downloads a binary
-for your chosen architecture, (GitHub runners are all `amd64`, so that's the
-default, but if you've got your own runners, `arch: arm64` can also be used).
+that selects a latest release of Spin with the GitHub API, then downloads a
+binary for your chosen architecture.
+
+GitHub runners are all `amd64`, so that's the default, but if you've got your
+own, or a way to provision arm64 runners, then `arch: arm64` can also be used.
+
+Note that while the build pipeline necessarily runs on one architecture,
+everything after this point is multi-arch and the build pipeline is building
+multiple architectures via BuildX and QEMU. This remains fast due to caching.
 
 [multi-arch support]: https://blog.container-solutions.com/building-multiplatform-container-images
 [Flux GitHub Action]: https://github.com/fluxcd/flux2/tree/main/action
@@ -40,19 +46,21 @@ default, but if you've got your own runners, `arch: arm64` can also be used).
 
 Bartholomew and the static content server both are Wasm modules that we hosted
 with the content; this is an OK decision even if they don't change as often as
-the content, because they are small-ish. We should be second-guessing this idea
-because it isn't sound, but it's OK for the demo (as it won't be solved today!)
+the content, because they are small-ish.
 
-In the Bindle model there can be even greater savings for large websites, since
+We should probably be second-guessing this idea because it isn't sound, but
+it's OK for the demo (as it must be, since it won't be solved today!)
+
+In the Bindle model there can be even greater savings for large websites, while
 the whole OCI artifact need not be downloaded again for every changed file; but
 right now it isn't clear how well Bindle works with Kubernetes, and our site is
 small so I'd posit that potential savings is all firmly imaginary for us today.
 
-GitHub pays for it now (thanks!), so we maybe don't need to care about this.
+GitHub pays for the I/O now (thanks!), so we maybe don't need to care about this.
 
-I went ahead and used OCI based on that, and because Spin has recently added
-support for OCI, that has parallels with Flux's OCI artifact push feature, it
-made good sense also to put this in a Helm chart, (and that's also with OCI!)
+I went ahead and used one OCI image, an easy choice as Spin has recently added
+the support for OCI registries. Flux's OCI push feature is similar, and it made
+sense to me to also put this in a Helm chart (yet again, OCI!)
 
 Only binaries for the currently used platform are downloaded from a multi-arch
 image manifest on any given node. There is some waste re-downloading the Wasm
@@ -65,14 +73,19 @@ even with multi-arch (2x architectures) – this means I can iterate very fast!
 
 It's a bit slower when the cache needs to be freshed. I used a multi-stage
 Dockerfile and probably could do better trimming out unneeded dependencies.
+The full build still finishes in [less than about 5 minutes][], which is great.
 
-We're cheating just a bit to achieve this: the multi-arch rootfs doesn't
-actually hold any site content that changes. It's just a shim and a pointer to
-the actual content, which gets published in an OCI image. This is much faster!
+We're cheating just a bit to achieve this: the multi-arch rootfs builds in
+parallel, and also doesn't hold any site content that changes. It's just a shim
+and a pointer to the actual content, which gets published in an OCI image.
+
+This is much faster!
 
 Only one file changes: `/env.vars` – with `BUILD_ID` that we source and export
 before `spin-up.sh`. Cold start is unfortunately slow because we download those
 two Wasm modules every time, that each weighs a positive integer number of MB.
+
+[less than about 5 minutes]: https://github.com/kingdonb/taking-bartholo/actions/runs/4327048077
 
 #### Why is Cold Start?
 
@@ -88,7 +101,8 @@ Spin shows us here just what Wasm can do.  Sharing memory between sandboxed
 pods, on the other hand, is evidently not exactly what Kubernetes was made to
 do. That's why Cold Start is the way it is here, and that's why this is hard.
 
-You should not have trusted me, nobody at Fermyon asked for any of this 😂
+You probably should not have followed me here, and there's definitely nobody at
+Fermyon who asked for any of this 😂
 
 ### How scale rly?
 
@@ -111,21 +125,61 @@ Fermyon Cloud (or Hippo Factory, the Open Source version of Fermyon Cloud!)
 
 Everything is driven by tagging.
 
-You tag a Docker image, which knows its own `BUILD_ID` that corresponds with an
-OCI content image (`spin registry push`) and that's what Spin runs. All of this
-happens in CI, on every branch and tag pushed.
+Tagging a commit builds a Docker image, which knows its own `BUILD_ID`. That id
+corresponds with a matching OCI content image tag (that contains the wasm, and
+we use `spin registry push` to create it.)
 
-There is no need to install Docker for local development at all, but you need
-to enable GitHub Actions on your own fork to push new Docker images to GHCR.io.
+At dev time, `BUILD_ID` is a tag with a timestamp. At release time, it's our
+semantic app release version. The blog is our app, the shim spin is merely an
+incidental bit of complexity that we have to carry around with us until the
+`runtimeClass` in Deployment spec has more broad use and acceptance in K8s.
+
+See also: [kwasm-operator][] for more about that idea!
+
+That OCI content image is what Spin runs your Wasm application (our blog) from.
+All of this image building happens in CI, on every branch and tag pushed.
+
+### Testing Locally
+
+There is no need to install Docker for local development at all, but you will
+need to enable GitHub Actions on your own fork to push new images to GHCR.io.
 
 <a id="tldr"/>
 
 The `Makefile` has some provisions for testing locally, and now also releasing.
 
+* `make` - with Docker installed, this should build an image and test it.
+
 You can type `make` to build an image locally, but it will not work without the
 corresponding OCI artifact that is made from the `consolidated.yaml` workflow.
 
-Follow the Release Guide below, (it should be OK to `tl;dr` at this point!)
+You're meant to use CI with OCI. It's in the name, for real!
+
+Don't try to do CI's whole job on your workstation. You can package versioned
+releases of the "blog" as a Helm chart, just follow the guide below!
+
+### Release tl;dr
+
+The commands below are for previewing before tagging a release. You should be
+able to use the images that CI produces for you to build the confidence.
+
+When you are confident, follow the Release Guide below to push your Helm chart.
+
+#### How to get confident
+
+We push two images together, with a matching build-id from CI as explained.
+
+So get CI running first, then run these and maybe read the `Makefile`:
+
+* `gh repo set-default` - to tell the `gh` CLI about your fork.
+* `make gh-latest-build-id` - to get the latest successful build-id.
+* `make test-latest` - run `make test TAG=%s` where %s is the build-id.
+
+You can use this to verify the output of CI is what you want to deploy.
+
+Once you are confident, follow the Release Guide below!
+
+(It should be quite OK to `tl;dr` beginning at this point!)
 
 ### Release Guide
 
@@ -141,11 +195,12 @@ Then, plug in your values and run these commands in sequence:
 ```
 make version-set TAG=0.1.1-dev
 make chart-ver-set SEMVER=0.2.1
-# (commit the resulting changes and PR/merge them or push to main)
+# (Stop: commit the resulting changes and PR/merge them, or push to main)
 
 make release    # this pushes both tags!
-#^– be sure that Docker Build from main is finished before this point,
-# (or your automated deployment is likely to fail with ImagePullBackOff!)
+# ^– be sure that Docker Build from main is finished
+#   (or the automated deployment you have downstream is likely to fail
+#     with ImagePullBackOff!)
 ```
 
 Taking into account the meaning of `MAJOR` and `MINOR` for communicating
@@ -228,7 +283,7 @@ This is a multi-arch Spin shim Docker image, that can run anywhere!
 
 (Yes, even on Kubernetes and even with an unmodified `containerd`. To avoid
 writing a whole Docker file, we could follow [kwasm-operator][], but that
-requires privileged access to nodes that we wish to avoid.)
+requires some quite privileged access to nodes that we will need to avoid.)
 
 [kwasm-operator]: https://github.com/KWasm/kwasm-operator
 
