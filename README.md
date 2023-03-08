@@ -4,6 +4,34 @@ This repository is built from the template for creating new [Bartholomew](https:
 
 Why would anyone want to deploy Bartholomew this way? (Honestly, why wouldn't we want to deploy Bartholomew this way?! 😂)
 
+## Dedication
+
+This project is for my lovely wife, Katherine! R programmer, statistics guru, river protector, bug ID expert, and master naturalist also distinguished as a Doctor of Biological Sciences! Whose preceding blog was tragically trampled in the great Wordpress disaster of October '21.
+
+RIP Bitnami Wordpress, (this blog died the unfortunate death of a thousand bitrots.)
+
+### Foreword
+
+This new blog must be easy to maintain, and by easy I mean effortless! It must run on Kubernetes and it should use GitOps and Helm to deploy. We'll automate everything. These are my ideas. I hope they turn out to be as good for this specific application as I have seen them turn out for others! We're using Kubernetes because I already have a Kubernetes.
+
+Wordpress before was also on Kubernetes. The next iteration of blog was always going to run on Kubernetes!
+
+Fermyon published Bartholomew, the Wasm blog platform, and we'll be giving it a Spin. Well, maybe we won't need Kubernetes after all... in the end, if it's a Spin app, then it definitely does not need Kubernetes. It could be deployed and hosted elsewhere. Say for example, on Fermyon Cloud! But we'll use Kubernetes.
+
+I bet this will turn out to be a fine choice. If you don't know about Fermyon, Wasm, Bartholomew, and Spin, I'm sorry but I don't have time to explain any of that right this moment; but there are loads of links below to help you get started if you're a quick study, and if I'm right you won't need to know much of those details to take advantage of what's been done here to get yourself started.
+
+If you don't know Kubernetes, this might not be the best "first example" as there's a lot to cover. I will aim not to assume knowledge, and link everything!
+
+Tl;dr: start from [Usage][], [Deploy with Flux][], or [Releasing][] as those are the main "personas" or uses which this README should help build mastery of.
+
+Now let's talk about what's in this Git repository, and with specific attention to [what has been added][] to [the original template][].
+
+[what has been added]: https://github.com/kingdonb/taking-bartholo
+[the original template]: https://github.com/fermyon/bartholomew-site-template
+[Usage]: #usage
+[Deploy with Flux]: #deploy-with-flux
+[Releasing]: #releasing
+
 ## Inventory
 
 I have added:
