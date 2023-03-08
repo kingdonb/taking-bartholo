@@ -52,6 +52,20 @@ address multiple platforms with a single image tag. This simplifies downstream
 deployment significantly, as our deployer need not make separate manifests or
 patches, or even be aware of whether multiple architectures are in use at all.
 
+## Directory Structure
+
+Refer to [fermyon/bartholomew-site-template][] for the recommended site structure.
+
+A snapshot of the current tree is in `tree.txt` at the repository root.
+
+Besides the original template content, this repo also includes some updated
+top-level configuration, GitHub `action/` and `.github/workflows`,
+`ci-scripts/`, `charts/bart/`, and some other files we created whilst following
+the [Fermyon developer guide: Bartholomew Quickstart][].
+
+[fermyon/bartholomew-site-template]: https://github.com/fermyon/bartholomew-site-template
+[Fermyon developer guide: Bartholomew Quickstart]: https://developer.fermyon.com/bartholomew/quickstart
+
 ### Dependencies
 
 Spin itself is a Rust application that compiles for specific host platforms.
@@ -286,20 +300,6 @@ Spin is made for local development, you don't need a new pod every time to test
 your changes – Spin is the server, and it runs anywhere.
 
 Measure twice, cut once... Helm releases and pod sandboxes don't grow on trees!
-
-## Directory Structure:
-
-Refer to [fermyon/bartholomew-site-template][] for the recommended site structure.
-
-A snapshot of the current tree is in `tree.txt` at the repository root.
-
-Besides the original template content, this repo also includes some updated
-top-level configuration, GitHub `action/` and `.github/workflows`,
-`ci-scripts/`, `charts/bart/`, and some other files we created whilst following
-the [Fermyon developer guide: Bartholomew Quickstart][].
-
-[fermyon/bartholomew-site-template]: https://github.com/fermyon/bartholomew-site-template
-[Fermyon developer guide: Bartholomew Quickstart]: https://developer.fermyon.com/bartholomew/quickstart
 
 # Usage
 
