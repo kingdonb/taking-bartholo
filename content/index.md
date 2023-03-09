@@ -5,7 +5,7 @@
 # REQUIRED
 
 # The title of the document
-title = "Welcome to Bartholomew"
+title = "Welcome to Blog"
 
 # OPTIONAL
 
