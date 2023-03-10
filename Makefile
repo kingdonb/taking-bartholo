@@ -1,4 +1,4 @@
-.PHONY: all build-test test version-set chart-ver-set release
+.PHONY: all build-test test version-set chart-ver-set release-app release-chart
 .PHONY: test-latest gh-latest-build-id check GH-exists
 
 GITHUB_ACTOR ?= kingdonb
@@ -17,9 +17,11 @@ build-test:
 	docker buildx build --build-arg GITHUB_ACTOR=$(GITHUB_ACTOR) \
 		--load . -t $(IMAGE)
 
-release:
+release-app:
 	git tag $(VERSION)
 	git push origin $(VERSION)
+
+release-chart:
 	git tag chart-$(CHART_VER)
 	git push origin chart-$(CHART_VER)
 
