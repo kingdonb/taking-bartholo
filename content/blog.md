@@ -1,4 +1,4 @@
-title = "Your new blog"
+title = "Hello GitOps"
 description = "All you need to know to get started with Bartholomew"
 template = "blog"
 date = "2021-12-23T17:05:19Z"
