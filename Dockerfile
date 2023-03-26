@@ -1,8 +1,8 @@
 ARG BUILD_ID=canary
 ARG GITHUB_ACTOR
-FROM debian:stable-slim AS builder
+FROM debian:testing-slim AS builder
 
-ENV spin_ver=0.10.0
+ENV spin_ver=1.0.0
 ARG TARGETARCH
 
 COPY ci-scripts/platform.sh .
