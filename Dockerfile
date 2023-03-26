@@ -1,6 +1,6 @@
 ARG BUILD_ID=canary
 ARG GITHUB_ACTOR
-FROM debian:testing-slim AS builder
+FROM debian:bookworm-slim AS builder
 
 ENV spin_ver=1.0.0
 ARG TARGETARCH
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y wget && \
   rm spin-v${spin_ver}-linux-$(cat /.platform).tar.gz && \
   rm -rf /var/lib/apt/lists/*
 
-FROM debian:testing-slim AS runner
+FROM debian:bookworm-slim AS runner
 COPY --from=builder /usr/local/bin/spin /usr/local/bin/spin
 WORKDIR /opt
 RUN apt-get update && apt-get install -y ca-certificates && \
