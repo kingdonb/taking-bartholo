@@ -1,5 +1,5 @@
 .PHONY: all build-test test version-set chart-ver-set release-app release-chart
-.PHONY: test-latest gh-latest-build-id check GH-exists
+.PHONY: test-latest gh-latest-build-id check GH-exists verify-release
 
 GITHUB_ACTOR ?= kingdonb
 
@@ -16,6 +16,13 @@ all: build-test test
 build-test:
 	docker buildx build --build-arg GITHUB_ACTOR=$(GITHUB_ACTOR) \
 		--load . -t $(IMAGE)
+
+verify-release:
+	cosign verify \
+		ghcr.io/$(GITHUB_ACTOR)/taking-bartholo:$(VERSION) \
+		--certificate-identity \
+		https://github.com/$(GITHUB_ACTOR)/taking-bartholo/.github/workflows/consolidated.yaml@refs/tags/$(VERSION) \
+		--certificate-oidc-issuer https://token.actions.githubusercontent.com
 
 release-app:
 	git tag $(VERSION)
