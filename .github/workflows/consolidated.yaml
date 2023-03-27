@@ -37,6 +37,7 @@ jobs:
     permissions:
       packages: write
       contents: read
+      id-token: write # needed for signing the images with GitHub OIDC Token **not production ready**
     env:
       IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
     runs-on: ubuntu-latest
@@ -54,6 +55,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f03ac48505955848960e80bbb68046aa35c7b9e7 # pin@v2
 
+      # Use Cosign to sign and verify site content as OCI
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # pin@v2
         with:
@@ -64,6 +69,12 @@ jobs:
       - name: Check out code
         id: checkout
         uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # pin@v3
+
+      - id: docker_meta
+        uses: docker/metadata-action@v4.3.0
+        with:
+          images: ${{ env.IMAGE }}
+          tags: type=sha,format=long
 
       - name: Build and push
         id: docker_build
@@ -82,6 +93,11 @@ jobs:
 
       - name: Image digest
         run: echo digest=${{ steps.docker_build.outputs.digest }} >> $GITHUB_OUTPUT
+
+      - name: Sign the images with GitHub OIDC Token
+        run: cosign sign --yes ${TAGS}
+        env:
+          TAGS: ${{ env.IMAGE }}@${{ steps.docker_build.outputs.digest }}
 
   spin-registry-push:
     needs: build-id
