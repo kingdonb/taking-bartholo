@@ -19,7 +19,7 @@ description = "The Micro-CMS for WebAssembly and Spin"
 # These fields are user-definable. You can create whatever values you want
 # here. The format must be `string` keys with `string` values, though.
 [extra]
-date = "Nov. 15, 2021"
+date = "Jul. 2, 2023"
 
 # Anything after this line is considered Markdown content
 ---
