@@ -5,12 +5,12 @@
 # REQUIRED
 
 # The title of the document
-title = "Welcome to MOO MO MOOO"
+title = "Welcome to Dr. Barrett's Environmental Science Hub"
 
 # OPTIONAL
 
 # The description of the page.
-description = "The Micro-CMS for WebAssembly and Spin"
+description = "The place to promote student projects & my own."
 
 # The name of the template to use. `templates/` is automatically prepended, and `.hbs` is appended.
 # So if you set this to `blog`, it becomes `templates/blog.hbs`.
@@ -19,7 +19,7 @@ description = "The Micro-CMS for WebAssembly and Spin"
 # These fields are user-definable. You can create whatever values you want
 # here. The format must be `string` keys with `string` values, though.
 [extra]
-date = "Nov. 15, 2021"
+date = "July 2, 2023"
 
 # Anything after this line is considered Markdown content
 ---
