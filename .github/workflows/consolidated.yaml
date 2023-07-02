@@ -39,9 +39,16 @@ jobs:
       contents: read
       id-token: write # needed for signing the images with GitHub OIDC Token **not production ready**
     env:
-      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
+      GITHUB_OWNER: ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
+      - name: downcase OWNER
+        run: |
+          echo "OWNER=${GITHUB_OWNER,,}" >>${GITHUB_ENV}
+
+      - name: set IMAGE
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo"
+
       - name: Set BUILD_ID
         id: build-id
         run: |
@@ -105,9 +112,16 @@ jobs:
       packages: write
       contents: read
     env:
-      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo/oci
+      GITHUB_OWNER: ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
+      - name: downcase OWNER
+        run: |
+          echo "OWNER=${GITHUB_OWNER,,}" >>${GITHUB_ENV}
+
+      - name: set IMAGE
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo/oci"
+
       - name: Set BUILD_ID
         id: build-id
         run: |
