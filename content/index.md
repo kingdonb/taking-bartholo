@@ -5,7 +5,7 @@
 # REQUIRED
 
 # The title of the document
-title = "Welcome to MOO MOO"
+title = "Welcome to MOO MO MOOO"
 
 # OPTIONAL
 
