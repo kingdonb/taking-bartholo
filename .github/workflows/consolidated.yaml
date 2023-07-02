@@ -48,7 +48,7 @@ jobs:
 
       - name: set IMAGE
         run: |
-          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo"
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo" >>${GITHUB_ENV}
 
       - name: Set BUILD_ID
         id: build-id
@@ -122,7 +122,7 @@ jobs:
 
       - name: set IMAGE
         run: |
-          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo/oci"
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo/oci" >>${GITHUB_ENV}
 
       - name: Set BUILD_ID
         id: build-id
