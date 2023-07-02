@@ -24,6 +24,4 @@ date = "July 2, 2023"
 # Anything after this line is considered Markdown content
 ---
 
-This is an example home page written in _Markdown_.
-
-You can find this text in `content/index.md`.
+# Check back frequently for updates!
