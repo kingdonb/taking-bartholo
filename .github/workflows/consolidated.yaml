@@ -71,7 +71,7 @@ jobs:
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # pin@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ env.OWNER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check out code
@@ -93,7 +93,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
-            GITHUB_ACTOR=${{ github.actor }}
+            GITHUB_ACTOR=${{ env.OWNER }}
           tags: |
             ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
           cache-from: type=gha
