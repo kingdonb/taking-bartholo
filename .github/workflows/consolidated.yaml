@@ -39,9 +39,17 @@ jobs:
       contents: read
       id-token: write # needed for signing the images with GitHub OIDC Token **not production ready**
     env:
-      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo
+      GITHUB_OWNER: ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
+      - name: downcase OWNER
+        run: |
+          echo "OWNER=${GITHUB_OWNER,,}" >>${GITHUB_ENV}
+
+      - name: set IMAGE
+        run: |
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo" >>${GITHUB_ENV}
+
       - name: Set BUILD_ID
         id: build-id
         run: |
@@ -63,7 +71,7 @@ jobs:
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a # pin@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ env.OWNER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check out code
@@ -85,7 +93,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             BUILD_ID=${{ steps.build-id.outputs.BUILD_ID }}
-            GITHUB_ACTOR=${{ github.actor }}
+            GITHUB_ACTOR=${{ env.OWNER }}
           tags: |
             ${{ env.IMAGE }}:${{ steps.build-id.outputs.BUILD_ID }}
           cache-from: type=gha
@@ -105,9 +113,17 @@ jobs:
       packages: write
       contents: read
     env:
-      IMAGE: ghcr.io/${{ github.actor }}/taking-bartholo/oci
+      GITHUB_OWNER: ${{ github.actor }}
     runs-on: ubuntu-latest
     steps:
+      - name: downcase OWNER
+        run: |
+          echo "OWNER=${GITHUB_OWNER,,}" >>${GITHUB_ENV}
+
+      - name: set IMAGE
+        run: |
+          echo "IMAGE=ghcr.io/${OWNER}/taking-bartholo/oci" >>${GITHUB_ENV}
+
       - name: Set BUILD_ID
         id: build-id
         run: |
