@@ -24,6 +24,6 @@ date = "Nov. 15, 2021"
 # Anything after this line is considered Markdown content
 ---
 
-This is an example home page written in _Markdown_.
+I would like to see some text in **bold**. And another sentence after that...
 
 You can find this text in `content/index.md`.
