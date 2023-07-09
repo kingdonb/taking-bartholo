@@ -24,6 +24,5 @@ date = "Jul. 2, 2023"
 # Anything after this line is considered Markdown content
 ---
 
-I would like to see some text in **bold**. And another sentence after that...
 
-You can find this text in `content/index.md`.
+I would like to see some text in **bold**. And another sentence after that...
