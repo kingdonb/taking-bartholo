@@ -3,7 +3,7 @@ ARG GITHUB_ACTOR
 FROM debian:bookworm-slim AS builder
 # FROM --platform=$BUILDPLATFORM debian:bookworm-slim AS builder
 
-ENV spin_ver=1.0.0
+ENV spin_ver=1.3.0
 ARG TARGETARCH
 
 COPY ci-scripts/platform.sh .
@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y wget && \
     --signature spin.sig --certificate crt.pem \
     --certificate-identity https://github.com/fermyon/spin/.github/workflows/release.yml@refs/tags/v${spin_ver} \
     --certificate-oidc-issuer https://token.actions.githubusercontent.com \
-    --certificate-github-workflow-sha df99be238267b498451993d47b7e42e17da95c09 \
+    --certificate-github-workflow-sha 9fb8256d1380a046414b22bf2c17d1543f5029e4 \
     --certificate-github-workflow-repository fermyon/spin \
     spin && \
   mv spin /usr/local/bin/ && \
