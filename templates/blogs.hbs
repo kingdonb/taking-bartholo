@@ -2,6 +2,7 @@
 
 <div class="col-md-8">
 
+    {{#each (blogs site.pages)}}
     <article class="blog-post">
         <h1 class="blog-post-title border-bottom">{{page.head.title}}</h1>
             <p class="blog-post-meta">
@@ -13,6 +14,7 @@
             {{{page.body}}}
             <p><a href="{{this.uri}}">View the Post</a></p>
     </article>
+    {{/each}}
 
 </div><!-- end col -->
 {{> content_sidebar }}
