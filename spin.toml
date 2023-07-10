@@ -17,7 +17,7 @@ route = "/..."
 id = "fileserver"
 files = [ { source = "static/", destination = "/" } ]
 [component.source]
-url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.0.1/spin_static_fs.wasm"
-digest = "sha256:650376c33a0756b1a52cad7ca670f1126391b79050df0321407da9c741d32375"
+url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.0.2/spin_static_fs.wasm"
+digest = "sha256:65456bf4e84cf81b62075e761b2b0afaffaef2d0aeda521b245150f76b96421b"
 [component.trigger]
 route = "/static/..."
